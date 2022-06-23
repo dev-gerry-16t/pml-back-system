@@ -1,6 +1,6 @@
 {
   "name": "pml-back-third",
-  "version": "v0.0.1",
+  "version": "v0.0.2",
   "description": "Connect with other services",
   "main": "index.js",
   "scripts": {

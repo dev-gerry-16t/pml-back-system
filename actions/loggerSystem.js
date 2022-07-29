@@ -11,7 +11,7 @@ const LoggerSystem = (
   error = {},
   location = {}
 ) => {
-  const dateTime = moment().utcOffset("-05:00").format("YYYY/MMM/DD hh:mm:ss");
+  const dateTime = moment().utcOffset("-05:00").format("YYYY/MMM/DD hh:mm:ss a");
   const errorMessage =
     isNil(error) === false &&
     isObject(error) === true &&

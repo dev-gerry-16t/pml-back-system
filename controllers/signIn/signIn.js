@@ -171,7 +171,7 @@ const executeCallDealHubSpotApi = async (params) => {
 };
 
 const executeSignInUser = async (params, res, fromIp) => {
-  const { userId, password, parameter, language } = params;
+  const { userId, mobilephone, password, parameter, language } = params;
 
   const storeProcedure = "configSch.USPgetParameter";
   const idParameter = null;
@@ -247,6 +247,7 @@ const executeSignInUser = async (params, res, fromIp) => {
         await executeRequestEnroll(
           {
             ...infoUserContact,
+            phoneNumber: mobilephone,
             password,
             hSContact:
               isNil(responseContact) === false &&

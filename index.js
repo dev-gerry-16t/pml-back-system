@@ -55,7 +55,7 @@ const port = process.env.PORT || GLOBAL_CONSTANTS.PORT;
 
 app.get("/", (req, res) => {
   LoggerSystem("not available route '/'").warn();
-  res.status(404).send("<h1>Not found</h1>");
+  res.status(200).send("<h1>Not found</h1>");
 });
 
 app.use("/api/v1/signin", routesSignIn);

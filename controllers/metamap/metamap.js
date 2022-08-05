@@ -147,8 +147,58 @@ const executeGetMetamapConfig = async (params) => {
   } catch (error) {}
 };
 
+const executeSetMetamapIdentity = async (params) => {
+  const {
+    metadata,
+    jsonServiceResponse,
+    offset = GLOBAL_CONSTANTS.OFFSET,
+  } = params;
+  const storeProcedure = "metamapSch.USPsetMetamapIdentity";
+  const locationCode = {
+    function: "executeSetMetamapIdentity",
+    file: "index.js",
+    container: "pml-back-system",
+  };
+
+  try {
+    const pool = await sql.connect();
+    const result = await pool
+      .request()
+      .input("p_nvcMetadata", sql.NVarChar, metadata)
+      .input("p_nvcJsonServiceResponse", sql.NVarChar, jsonServiceResponse)
+      .input("p_chrOffset", sql.Char(6), offset)
+      .execute(storeProcedure);
+    const resultRecordset =
+      isEmpty(result) === false &&
+      isEmpty(result.recordset) === false &&
+      isNil(result.recordset) === false
+        ? result.recordset
+        : {};
+    const resultRecordsetObject =
+      isEmpty(resultRecordset) === false &&
+      isNil(resultRecordset[0]) === false &&
+      isEmpty(resultRecordset[0]) === false
+        ? resultRecordset[0]
+        : [];
+    if (resultRecordsetObject.stateCode !== 200) {
+      throw resultRecordsetObject.errorDetail;
+    } else {
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 const executeCreateIdentityVerification = async (params, res) => {
-  const { flowId, metadata, idSystemUser, idLoginHistory, idCustomer } = params;
+  const {
+    flowId,
+    metadata,
+    idSystemUser,
+    idLoginHistory,
+    idCustomer,
+    identity = null,
+    offset = GLOBAL_CONSTANTS.OFFSET,
+  } = params;
   const storeProcedure = "none";
   const locationCode = {
     function: "executeCreateIdentityVerification",
@@ -160,6 +210,12 @@ const executeCreateIdentityVerification = async (params, res) => {
       idLoginHistory,
       idCustomer,
     });
+    const body = { flowId, metadata };
+
+    if (isNil(identity) === false) {
+      body.identityId = identity;
+    }
+
     const response = await RequestPromise({
       url: "https://api.getmati.com/v2/verifications",
       method: "POST",
@@ -169,10 +225,15 @@ const executeCreateIdentityVerification = async (params, res) => {
         Authorization: `Bearer ${token}`,
       },
       json: true,
-      body: { flowId, metadata },
+      body,
       rejectUnauthorized: false,
     });
     if (isEmpty(response) === false) {
+      await executeSetMetamapIdentity({
+        jsonServiceResponse: JSON.stringify(response),
+        metadata: JSON.stringify(metadata),
+        offset,
+      });
       return res.status(200).send({
         response: {
           token,
@@ -184,6 +245,7 @@ const executeCreateIdentityVerification = async (params, res) => {
       throw "Error en el servicio, si persiste el error contacta con soporte";
     }
   } catch (error) {
+    console.log("error", error.code);
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     return res.status(500).send({
       response: {

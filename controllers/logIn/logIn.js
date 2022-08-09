@@ -105,8 +105,10 @@ const executeSetLoginHistory = async (params, res, url, ip) => {
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(500).send({
-      message:
-        "Error en el servicio, si persiste el error contacta con soporte",
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
     });
   }
 };
@@ -209,8 +211,10 @@ const executeVerifyLogin = async (params, res) => {
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(500).send({
-      message:
-        "Error en el servicio, si persiste el error contacta con soporte",
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
     });
   }
 };
@@ -289,8 +293,10 @@ const executeGetUserProfile = async (params, res) => {
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(500).send({
-      message:
-        "Error en el servicio, si persiste el error contacta con soporte",
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
     });
   }
 };
@@ -313,7 +319,9 @@ const executeVerifyLoginWithToken = async (params, res) => {
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(401).send({
-      message: "Token no valido o ha expirado",
+      response: {
+        message: "Token no valido o ha expirado",
+      },
     });
   }
 };

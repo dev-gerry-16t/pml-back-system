@@ -556,7 +556,6 @@ const executeSetCustomerInDocument = async (params, res, file) => {
     offset = GLOBAL_CONSTANTS.OFFSET,
     bucketSource,
   } = params;
-  console.log("params", params);
   const storeProcedure = "docSch.USPsetCustomerInDocument";
   const locationCode = {
     function: "executeSetCustomerInDocument",

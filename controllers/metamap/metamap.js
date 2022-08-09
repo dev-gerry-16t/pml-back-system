@@ -52,7 +52,6 @@ const executeSetMetamapConfig = async (params) => {
     file: "index.js",
     container: "pml-metamap-system",
   };
-
   try {
     const pool = await sql.connect();
     const result = await pool
@@ -80,7 +79,9 @@ const executeSetMetamapConfig = async (params) => {
       throw resultRecordsetObject.errorDetail;
     } else {
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 const executeGetMetamapConfig = async (params) => {
@@ -245,7 +246,6 @@ const executeCreateIdentityVerification = async (params, res) => {
       throw "Error en el servicio, si persiste el error contacta con soporte";
     }
   } catch (error) {
-    console.log("error", error.code);
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     return res.status(500).send({
       response: {

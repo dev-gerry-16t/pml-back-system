@@ -217,6 +217,7 @@ const executeSetPipelineStep = async (params, res, url) => {
     idCustomer = null,
     idStep,
     idStepLine = null,
+    alpha2 = null,
     offset = GLOBAL_CONSTANTS.OFFSET,
   } = params;
   const { idPawn } = url;
@@ -254,6 +255,7 @@ const executeSetPipelineStep = async (params, res, url) => {
       .input("p_uidIdPawn", sql.NVarChar, idPawn)
       .input("p_intIdStep", sql.Int, idStep)
       .input("p_intIdStepLine", sql.Int, idStepLine)
+      .input("p_nvcAlpha2", sql.NVarChar(64), alpha2)      
       .input("p_chrOffset", sql.Char(6), offset)
       .execute(storeProcedure);
     const resultRecordset =

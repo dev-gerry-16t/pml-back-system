@@ -311,10 +311,7 @@ const executeVerifyLoginWithToken = async (params, res) => {
   try {
     const response = await verifyToken(token);
     res.status(200).send({
-      response: {
-        idSystemUser: response.idSystemUser,
-        idLoginHistory: response.idLoginHistory,
-      },
+      response,
     });
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();

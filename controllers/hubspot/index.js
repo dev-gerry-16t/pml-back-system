@@ -31,7 +31,9 @@ const executeGetContactInformationById = async (params, res) => {
       locationCode
     ).error();
     res.status(500).send({
-      message: "fail",
+      response: {
+        message: "Link no valido",
+      },
     });
   }
 };

@@ -126,7 +126,8 @@ const executeGetMetamapConfig = async (params) => {
         : [];
     let tokenMetaMap = null;
     if (resultRecordsetObject.stateCode !== 200) {
-      tokenMetaMap = await executeGetTokenMetaMap({});
+      // tokenMetaMap = await executeGetTokenMetaMap({});
+      throw resultRecordsetObject.message;
     } else {
       if (resultRecordsetObject.canBeRefreshed === true) {
         tokenMetaMap = await executeGetTokenMetaMap({
@@ -145,7 +146,9 @@ const executeGetMetamapConfig = async (params) => {
       }
     }
     return tokenMetaMap;
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 const executeSetMetamapIdentity = async (params) => {
@@ -250,7 +253,7 @@ const executeCreateIdentityVerification = async (params, res) => {
     return res.status(500).send({
       response: {
         message:
-          "Error en el servicio, si persiste el error contacta con soporte",
+          "No se proceso tu solicitud correctamente, si persiste el error contacta con soporte",
       },
     });
   }

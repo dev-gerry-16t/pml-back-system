@@ -162,7 +162,7 @@ const executeRequestPasswordRecovery = async (params, res) => {
         },
         GLOBAL_CONSTANTS.MASTER_KEY_TOKEN,
         {
-          expiresIn: "1200",
+          expiresIn: "1h",
         }
       );
       for (const element of resultRecordset) {

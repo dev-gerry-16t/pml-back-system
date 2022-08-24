@@ -16,6 +16,7 @@ const routesSystemUser = require("./routes/routesSystemUser");
 const routesMetaMap = require("./routes/routesMetamap");
 const routesCatalogs = require("./routes/routesCatalogs");
 const routesViewFiles = require("./routes/routesViewFiles");
+const routesWhatsApp = require("./routes/routesWhatsApp");
 
 const verifyToken = require("./middleware/authenticate");
 
@@ -66,6 +67,7 @@ app.use("/api/v1/systemUser", routesSystemUser);
 app.use("/api/v1/verification", routesMetaMap);
 app.use("/api/v1/catalogs", routesCatalogs);
 app.use("/api/v1/file", routesViewFiles);
+app.use("/api/v1/message", routesWhatsApp);
 
 app.listen(port, (e, i) => {
   LoggerSystem("Server running").info();

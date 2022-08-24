@@ -29,7 +29,7 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "winston": "^3.7.2",
-    "winston-mongodb": "^5.0.7"
+    "winston-aws-cloudwatch": "^3.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.3"

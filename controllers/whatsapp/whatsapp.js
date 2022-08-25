@@ -140,7 +140,13 @@ const executeGetMessageScheduled = async (params, res) => {
         });
       }
     } else {
-      LoggerSystem(storeProcedure, {}, {}, error, locationCode).error();
+      LoggerSystem(
+        storeProcedure,
+        params,
+        resultRecordset,
+        {},
+        locationCode
+      ).warn();
       return res.status(500).send({
         response: {
           message: "Ocurrió un error en el sistema",

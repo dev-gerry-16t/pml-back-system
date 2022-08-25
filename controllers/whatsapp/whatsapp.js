@@ -117,9 +117,9 @@ const executeGetMessageScheduled = async (params, res) => {
       if (resultRecordsetObject.stateCode !== 200) {
         LoggerSystem(
           storeProcedure,
-          {},
-          {},
-          resultRecordsetObject.errorMessage,
+          params,
+          resultRecordset,
+          resultRecordsetObject,
           locationCode
         ).warn();
         return res.status(resultRecordsetObject.stateCode).send({

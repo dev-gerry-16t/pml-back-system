@@ -4,6 +4,7 @@ const isNil = require("lodash/isNil");
 const isEmpty = require("lodash/isEmpty");
 const GLOBAL_CONSTANTS = require("../../constants/constants");
 const LoggerSystem = require("../../actions/loggerSystem");
+const createBearerToken = require("../../actions/createBearerToken");
 const executeSetMessage = async (params) => {
   const {
     idMessage,
@@ -34,10 +35,29 @@ const executeSetMessage = async (params) => {
 };
 
 const executeMessageOutGoing = async (params) => {
-  const { method, endpoint, body, token, idMessage } = params;
+  const {
+    method,
+    endpoint,
+    body,
+    token,
+    idMessage,
+    hasToken,
+    idSystemUser,
+    idLoginHistory,
+    expireIn,
+  } = params;
+  let messageToWhatsApp = body;
 
   try {
-    const bodyParse = JSON.parse(body);
+    if (hasToken === true && isEmpty(body) === false) {
+      const tokenApp = await createBearerToken({
+        idSystemUser,
+        idLoginHistory,
+        tokenExpiration: expireIn,
+      });
+      messageToWhatsApp = body.replace("{{token}}", tokenApp);
+    }
+    const bodyParse = JSON.parse(messageToWhatsApp);
     const response = await RequestPromise({
       url: endpoint,
       method: method,

@@ -255,7 +255,7 @@ const executeSetPipelineStep = async (params, res, url) => {
       .input("p_uidIdPawn", sql.NVarChar, idPawn)
       .input("p_intIdStep", sql.Int, idStep)
       .input("p_intIdStepLine", sql.Int, idStepLine)
-      .input("p_nvcAlpha2", sql.NVarChar(64), alpha2)      
+      .input("p_nvcAlpha2", sql.NVarChar(64), alpha2)
       .input("p_chrOffset", sql.Char(6), offset)
       .execute(storeProcedure);
     const resultRecordset =
@@ -556,7 +556,7 @@ const executeSetCustomerInDocument = async (params, res, file) => {
     key = GLOBAL_CONSTANTS.KEY_CUSTOMER_IN_DOCUMENT,
     isActive = null,
     offset = GLOBAL_CONSTANTS.OFFSET,
-    bucketSource,
+    bucketSource = null,
   } = params;
   const storeProcedure = "docSch.USPsetCustomerInDocument";
   const locationCode = {
@@ -647,6 +647,110 @@ const executeSetCustomerInDocument = async (params, res, file) => {
   }
 };
 
+const executeSetCustomerInDeleteDocument = async (params, res) => {
+  const {
+    idSystemUser = null,
+    idLoginHistory = null,
+    idCustomer = null,
+    idDocument = null,
+    name = null,
+    extension = null,
+    metadata = null,
+    mimeType = null,
+    key = GLOBAL_CONSTANTS.KEY_CUSTOMER_IN_DOCUMENT,
+    isActive = null,
+    offset = GLOBAL_CONSTANTS.OFFSET,
+    bucketSource = null,
+  } = params;
+  const storeProcedure = "docSch.USPsetCustomerInDocument";
+  const locationCode = {
+    function: "executeSetCustomerInDeleteDocument",
+    file: "systemUser.js",
+  };
+  try {
+    const pool = await sql.connect();
+    const result = await pool
+      .request()
+      .input("p_uidIdSystemUser", sql.NVarChar, idSystemUser)
+      .input("p_uidIdLoginHistory", sql.NVarChar, idLoginHistory)
+      .input("p_uidIdCustomer", sql.NVarChar, idCustomer)
+      .input("p_uidIdDocument", sql.NVarChar, idDocument)
+      .input("p_vchName", sql.VarChar(256), name)
+      .input("p_vchExtension", sql.VarChar(16), extension)
+      .input("p_nvcMimeType", sql.NVarChar(1024), mimeType)
+      .input("p_nvcMetadata", sql.NVarChar(512), metadata)
+      .input("p_nvcKey", sql.NVarChar(126), key)
+      .input("p_bitIsActive", sql.Bit, isActive)
+      .input("p_chrOffset", sql.Char(6), offset)
+      .execute(storeProcedure);
+    const resultRecordset =
+      isEmpty(result) === false &&
+      isEmpty(result.recordset) === false &&
+      isNil(result.recordset) === false
+        ? result.recordset
+        : {};
+    const resultRecordsetObject =
+      isEmpty(resultRecordset) === false &&
+      isNil(resultRecordset[0]) === false &&
+      isEmpty(resultRecordset[0]) === false
+        ? resultRecordset[0]
+        : [];
+    if (
+      isEmpty(resultRecordsetObject) === false &&
+      resultRecordsetObject.stateCode !== 200
+    ) {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        resultRecordsetObject,
+        {},
+        locationCode
+      ).warn();
+      return res.status(resultRecordsetObject.stateCode).send({
+        response: {
+          message: resultRecordsetObject.message,
+        },
+      });
+    } else if (isEmpty(resultRecordsetObject) === false) {
+      // const idDocument =
+      //   isNil(resultRecordsetObject.idDocument) === false
+      //     ? resultRecordsetObject.idDocument
+      //     : "";
+      // const paramsAws = {
+      //   Bucket: bucketSource,
+      //   Key: idDocument,
+      //   Body: file.buffer,
+      // };
+      // await s3.upload(paramsAws).promise();
+      return res.status(resultRecordsetObject.stateCode).send({
+        response: {
+          message: resultRecordsetObject.message,
+        },
+      });
+    } else {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        resultRecordsetObject,
+        {},
+        locationCode
+      ).warn();
+      return res.status(500).send({
+        response: {
+          message:
+            "Error en el servicio, si persiste el error contacta con soporte",
+        },
+      });
+    }
+  } catch (error) {
+    LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
+    res.status(500).send({
+      message:
+        "Error en el servicio, si persiste el error contacta con soporte",
+    });
+  }
+};
+
 const ControllerSystemConfiguration = {
   getPipeline: (req, res) => {
     const params = req.body;
@@ -674,6 +778,10 @@ const ControllerSystemConfiguration = {
     const params = JSON.parse(req.body.fileProperties);
     const fileParams = req.file;
     executeSetCustomerInDocument(params, res, fileParams);
+  },
+  setCustomerInDeleteDocument: (req, res) => {
+    const params = req.body;
+    executeSetCustomerInDeleteDocument(params, res);
   },
 };
 

@@ -330,6 +330,13 @@ const executeVerifyEnroll = async (params, res) => {
         },
       });
     } else if (isEmpty(resultObject) === false) {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        resultObject,
+        {},
+        locationCode
+      ).info();
       const tokenApp = await createBearerToken({
         idSystemUser: resultObject.idSystemUser,
         idLoginHistory: resultObject.idLoginHistory,

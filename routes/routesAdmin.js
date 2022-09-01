@@ -8,5 +8,7 @@ const ControllerSystemAdmin = require("../controllers/admin/admin");
 router.post("/setUserInObject", ControllerSystemAdmin.setUserInObject);
 router.post("/getPawnCoincidences", ControllerSystemAdmin.getPawnCoincidences);
 router.post("/getPipelineAdmin", ControllerSystemAdmin.getPipelineAdmin);
+router.post("/getPawnDocumentsForAdmin", ControllerSystemAdmin.getPawnDocumentsForAdmin);
+router.put("/reviewDocument/:idDocument", ControllerSystemAdmin.reviewDocument);
 
 module.exports = router;

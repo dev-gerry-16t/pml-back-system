@@ -146,6 +146,16 @@ const executeGetPawnCoincidences = async (params, res) => {
   }
 };
 
+const handlerExtractNullObject = (array) => {
+  const resultArray = [];
+  array.forEach((element) => {
+    if (isNil(element) === false) {
+      resultArray.push(element);
+    }
+  });
+  return resultArray;
+};
+
 const executeGetPipelineAdmin = async (params, res) => {
   const {
     idSystemUser,
@@ -196,30 +206,18 @@ const executeGetPipelineAdmin = async (params, res) => {
         ).warn();
         return res.status(status).send({ response: { message, error } });
       }
-      const pipeline = JSON.parse(object.pipeline);
+      const pipeline =
+        isNil(object.pipeline) === false ? JSON.parse(object.pipeline) : {};
+      const pipelineArray =
+        isEmpty(pipeline) === false &&
+        isNil(pipeline.pipeline) === false &&
+        isEmpty(pipeline.pipeline) === false
+          ? handlerExtractNullObject(pipeline.pipeline)
+          : [];
       return res.status(status).send({
         response: {
-          message,
-          idItem:
-            isNil(pipeline.idItem) === false &&
-            isEmpty(pipeline.idItem) === false
-              ? pipeline.idItem
-              : null,
-          idPawn:
-            isNil(pipeline.idPawn) === false &&
-            isEmpty(pipeline.idPawn) === false
-              ? pipeline.idPawn
-              : null,
-          idSystemUser:
-            isNil(pipeline.idSystemUser) === false &&
-            isEmpty(pipeline.idSystemUser) === false
-              ? pipeline.idSystemUser
-              : null,
-          pipeline:
-            isNil(pipeline.pipeline) === false &&
-            isEmpty(pipeline.pipeline) === false
-              ? pipeline.pipeline
-              : [],
+          ...pipeline,
+          pipeline: pipelineArray,
         },
       });
     });

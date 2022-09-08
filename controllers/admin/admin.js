@@ -420,7 +420,7 @@ const executeSetPipelineAdminStep = async (params, res, url) => {
       .input("p_uidIdPawn", sql.NVarChar, idPawn)
       .input("p_intIdStep", sql.Int, idStep)
       .input("p_intIdStepLine", sql.Int, idStepLine)
-      .input("p_metadata", sql.NVarChar(sql.MAX), metadata)
+      .input("p_nvcMetadata", sql.NVarChar(sql.MAX), metadata)
       .input("p_chrOffset", sql.Char(6), offset)
       .execute(storeProcedure);
     ValidateResultDataBase(result, ({ status, message, error }, object) => {

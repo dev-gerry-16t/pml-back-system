@@ -10,5 +10,6 @@ router.post("/getPawnCoincidences", ControllerSystemAdmin.getPawnCoincidences);
 router.post("/getPipelineAdmin", ControllerSystemAdmin.getPipelineAdmin);
 router.post("/getPawnDocumentsForAdmin", ControllerSystemAdmin.getPawnDocumentsForAdmin);
 router.put("/reviewDocument/:idDocument", ControllerSystemAdmin.reviewDocument);
+router.put("/setPipelineAdminStep/:idPawn", ControllerSystemAdmin.setPipelineAdminStep);
 
 module.exports = router;

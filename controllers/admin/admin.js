@@ -210,8 +210,8 @@ const executeGetPipelineAdmin = async (params, res) => {
         isNil(object.pipeline) === false ? JSON.parse(object.pipeline) : {};
       const pipelineArray =
         isEmpty(pipeline) === false &&
-        isNil(pipeline.pipeline) === false &&
-        isEmpty(pipeline.pipeline) === false
+          isNil(pipeline.pipeline) === false &&
+          isEmpty(pipeline.pipeline) === false
           ? handlerExtractNullObject(pipeline.pipeline)
           : [];
       return res.status(status).send({
@@ -377,6 +377,80 @@ const executeReviewDocument = async (params, res, url) => {
   }
 };
 
+const executeSetPipelineAdminStep = async (params, res, url) => {
+  const {
+    idSystemUser,
+    idLoginHistory,
+    idStep,
+    idStepLine = null,
+    metadata = null,
+    offset = GLOBAL_CONSTANTS.OFFSET,
+  } = params;
+  const { idPawn } = url;
+  const storeProcedure = "pawnSch.USPsetPipelineAdminStep";
+  const locationCode = {
+    function: "executeSetPipelineAdminStep",
+    file: "admin.js",
+  };
+  try {
+    if (
+      isNil(idSystemUser) === true ||
+      isNil(idLoginHistory) === true ||
+      isNil(idPawn) === true ||
+      isNil(idStep) === true
+    ) {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        {},
+        "Error en los parámetros de entrada",
+        locationCode
+      ).warn();
+      return res.status(400).send({
+        response: {
+          message: "Error en los parámetros de entrada",
+        },
+      });
+    }
+    const pool = await sql.connect();
+    const result = await pool
+      .request()
+      .input("p_uidIdSystemUser", sql.NVarChar, idSystemUser)
+      .input("p_uidIdLoginHistory", sql.NVarChar, idLoginHistory)
+      .input("p_uidIdPawn", sql.NVarChar, idPawn)
+      .input("p_intIdStep", sql.Int, idStep)
+      .input("p_intIdStepLine", sql.Int, idStepLine)
+      .input("p_metadata", sql.NVarChar(sql.MAX), metadata)
+      .input("p_chrOffset", sql.Char(6), offset)
+      .execute(storeProcedure);
+    ValidateResultDataBase(result, ({ status, message, error }, object) => {
+      if (error) {
+        LoggerSystem(
+          storeProcedure,
+          params,
+          object,
+          error,
+          locationCode
+        ).warn();
+        return res.status(status).send({ response: { message, error } });
+      }
+      return res.status(status).send({
+        response: {
+          message,
+        },
+      });
+    });
+  } catch (error) {
+    LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
+    res.status(500).send({
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
+    });
+  }
+};
+
 const ControllerSystemAdmin = {
   setUserInObject: (req, res) => {
     const params = req.body;
@@ -398,6 +472,11 @@ const ControllerSystemAdmin = {
     const params = req.body;
     const url = req.params;
     executeReviewDocument(params, res, url);
+  },
+  setPipelineAdminStep: (req, res) => {
+    const params = req.body;
+    const url = req.params;
+    executeSetPipelineAdminStep(params, res, url);
   },
 };
 

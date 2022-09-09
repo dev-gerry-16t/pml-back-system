@@ -608,13 +608,6 @@ const executeSetCustomerInDocument = async (params, res, file) => {
         },
       });
     } else if (isEmpty(resultRecordsetObject) === false) {
-      LoggerSystem(
-        storeProcedure,
-        params,
-        resultRecordsetObject,
-        {},
-        locationCode
-      ).info();
       const idDocument =
         isNil(resultRecordsetObject.idDocument) === false
           ? resultRecordsetObject.idDocument

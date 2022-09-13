@@ -354,7 +354,7 @@ const executeReviewDocument = async (params, res, url) => {
       .execute(storeProcedure);
     ValidateResultDataBase(
       result,
-      async ({ status, message, error }, object) => {
+      async ({ status, message, error }, object, recordset) => {
         if (error) {
           LoggerSystem(
             storeProcedure,

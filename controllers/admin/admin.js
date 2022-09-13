@@ -6,6 +6,7 @@ const LoggerSystem = require("../../actions/loggerSystem");
 const ValidateResultDataBase = require("../../actions/validateResultDb");
 const executeMailTo = require("../../actions/sendInformationUser");
 const executeGetMessageScheduled = require("../../actions/sendWhatsApp");
+const createBearerToken = require("../../actions/createBearerToken");
 
 const executeSetUserInObject = async (params, res) => {
   const {
@@ -373,7 +374,24 @@ const executeReviewDocument = async (params, res, url) => {
         if (isEmpty(recordset) === false) {
           for (const element of recordset) {
             if (element.canSendEmail === true) {
-              await executeMailTo(element);
+              let arrayPushVar = [];
+              if (element.hasToken === true) {
+                const tokenApp = await createBearerToken({
+                  idSystemUser: element.idSystemUser,
+                  idLoginHistory: element.idLoginHistory,
+                  tokenExpiration: element.expireIn,
+                });
+                arrayPushVar = [
+                  {
+                    name: "nvcToken",
+                    content: tokenApp,
+                  },
+                ];
+              }
+              await executeMailTo({
+                ...element,
+                pushVar: arrayPushVar,
+              });
             }
           }
         }

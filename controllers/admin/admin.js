@@ -4,6 +4,8 @@ const isEmpty = require("lodash/isEmpty");
 const GLOBAL_CONSTANTS = require("../../constants/constants");
 const LoggerSystem = require("../../actions/loggerSystem");
 const ValidateResultDataBase = require("../../actions/validateResultDb");
+const executeMailTo = require("../../actions/sendInformationUser");
+const executeGetMessageScheduled = require("../../actions/sendWhatsApp");
 
 const executeSetUserInObject = async (params, res) => {
   const {
@@ -210,8 +212,8 @@ const executeGetPipelineAdmin = async (params, res) => {
         isNil(object.pipeline) === false ? JSON.parse(object.pipeline) : {};
       const pipelineArray =
         isEmpty(pipeline) === false &&
-          isNil(pipeline.pipeline) === false &&
-          isEmpty(pipeline.pipeline) === false
+        isNil(pipeline.pipeline) === false &&
+        isEmpty(pipeline.pipeline) === false
           ? handlerExtractNullObject(pipeline.pipeline)
           : [];
       return res.status(status).send({
@@ -349,23 +351,39 @@ const executeReviewDocument = async (params, res, url) => {
       .input("p_nvcComment", sql.NVarChar(256), comment)
       .input("p_chrOffset", sql.Char(6), offset)
       .execute(storeProcedure);
-    ValidateResultDataBase(result, ({ status, message, error }, object) => {
-      if (error) {
-        LoggerSystem(
-          storeProcedure,
-          params,
-          object,
-          error,
-          locationCode
-        ).warn();
-        return res.status(status).send({ response: { message, error } });
+    ValidateResultDataBase(
+      result,
+      async ({ status, message, error }, object) => {
+        if (error) {
+          LoggerSystem(
+            storeProcedure,
+            params,
+            object,
+            error,
+            locationCode
+          ).warn();
+          return res.status(status).send({ response: { message, error } });
+        }
+        if (isEmpty(object) === false && object.canSendWhats === true) {
+          await executeGetMessageScheduled(
+            { key: GLOBAL_CONSTANTS.KEY_MESSAGE_SCHEDULED },
+            () => {}
+          );
+        }
+        if (isEmpty(recordset) === false) {
+          for (const element of recordset) {
+            if (element.canSendEmail === true) {
+              await executeMailTo(element);
+            }
+          }
+        }
+        return res.status(status).send({
+          response: {
+            message,
+          },
+        });
       }
-      return res.status(status).send({
-        response: {
-          message,
-        },
-      });
-    });
+    );
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(500).send({
@@ -423,23 +441,39 @@ const executeSetPipelineAdminStep = async (params, res, url) => {
       .input("p_nvcMetadata", sql.NVarChar(sql.MAX), metadata)
       .input("p_chrOffset", sql.Char(6), offset)
       .execute(storeProcedure);
-    ValidateResultDataBase(result, ({ status, message, error }, object) => {
-      if (error) {
-        LoggerSystem(
-          storeProcedure,
-          params,
-          object,
-          error,
-          locationCode
-        ).warn();
-        return res.status(status).send({ response: { message, error } });
+    ValidateResultDataBase(
+      result,
+      async ({ status, message, error }, object, recordset) => {
+        if (error) {
+          LoggerSystem(
+            storeProcedure,
+            params,
+            object,
+            error,
+            locationCode
+          ).warn();
+          return res.status(status).send({ response: { message, error } });
+        }
+        if (isEmpty(object) === false && object.canSendWhats === true) {
+          await executeGetMessageScheduled(
+            { key: GLOBAL_CONSTANTS.KEY_MESSAGE_SCHEDULED },
+            () => {}
+          );
+        }
+        if (isEmpty(recordset) === false) {
+          for (const element of recordset) {
+            if (element.canSendEmail === true) {
+              await executeMailTo(element);
+            }
+          }
+        }
+        return res.status(status).send({
+          response: {
+            message,
+          },
+        });
       }
-      return res.status(status).send({
-        response: {
-          message,
-        },
-      });
-    });
+    );
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(500).send({

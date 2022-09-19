@@ -722,6 +722,11 @@ const executeSetCustomerInDeleteDocument = async (params, res) => {
       //   Body: file.buffer,
       // };
       // await s3.upload(paramsAws).promise();
+      const params1 = {
+        Bucket: bucketSource,
+        Key: idDocument,
+      };
+      await s3.deleteObject(params1).promise();
       return res.status(resultRecordsetObject.stateCode).send({
         response: {
           message: resultRecordsetObject.message,

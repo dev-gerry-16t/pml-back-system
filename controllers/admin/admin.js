@@ -503,6 +503,80 @@ const executeSetPipelineAdminStep = async (params, res, url) => {
   }
 };
 
+const executeGetPawnById = async (params, res) => {
+  const {
+    idSystemUser,
+    idLoginHistory,
+    idPawn,
+    offset = GLOBAL_CONSTANTS.OFFSET,
+  } = params;
+  const storeProcedure = "pawnSch.USPgetPawnById";
+  const locationCode = {
+    function: "executeGetPawnById",
+    file: "admin.js",
+  };
+  try {
+    if (
+      isNil(idSystemUser) === true ||
+      isNil(idLoginHistory) === true ||
+      isNil(idPawn) === true
+    ) {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        {},
+        "Error en los parámetros de entrada",
+        locationCode
+      ).warn();
+      return res.status(400).send({
+        response: {
+          message: "Error en los parámetros de entrada",
+        },
+      });
+    }
+    const pool = await sql.connect();
+    const result = await pool
+      .request()
+      .input("p_uidIdSystemUser", sql.NVarChar, idSystemUser)
+      .input("p_uidIdLoginHistory", sql.NVarChar, idLoginHistory)
+      .input("p_uidIdPawn", sql.NVarChar, idPawn)
+      .input("p_chrOffset", sql.Char(6), offset)
+      .execute(storeProcedure);
+    ValidateResultDataBase(result, ({ status, message, error }, object) => {
+      if (error) {
+        LoggerSystem(
+          storeProcedure,
+          params,
+          object,
+          error,
+          locationCode
+        ).warn();
+        return res.status(status).send({ response: { message, error } });
+      }
+      const pawnInfo =
+        isEmpty(object) === false &&
+        isNil(object.pawn) === false &&
+        isEmpty(object.pawn) === false
+          ? JSON.parse(object.pawn)
+          : {};
+      return res.status(status).send({
+        response: {
+          message: message,
+          pawn: pawnInfo,
+        },
+      });
+    });
+  } catch (error) {
+    LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
+    res.status(500).send({
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
+    });
+  }
+};
+
 const ControllerSystemAdmin = {
   setUserInObject: (req, res) => {
     const params = req.body;
@@ -529,6 +603,10 @@ const ControllerSystemAdmin = {
     const params = req.body;
     const url = req.params;
     executeSetPipelineAdminStep(params, res, url);
+  },
+  getPawnById: (req, res) => {
+    const params = req.body;
+    executeGetPawnById(params, res);
   },
 };
 

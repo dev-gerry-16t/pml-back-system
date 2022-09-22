@@ -577,6 +577,91 @@ const executeGetPawnById = async (params, res) => {
   }
 };
 
+const executeSetPawnProcess = async (params, res, url) => {
+  const {
+    idSystemUser,
+    idLoginHistory,
+    metadata = null,
+    offset = GLOBAL_CONSTANTS.OFFSET,
+  } = params;
+  const { idPawn } = url;
+  const storeProcedure = "pawnSch.USPsetPawnProcess";
+  const locationCode = {
+    function: "executeSetPawnProcess",
+    file: "admin.js",
+  };
+  try {
+    if (
+      isNil(idSystemUser) === true ||
+      isNil(idLoginHistory) === true ||
+      isNil(idPawn) === true 
+    ) {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        {},
+        "Error en los parámetros de entrada",
+        locationCode
+      ).warn();
+      return res.status(400).send({
+        response: {
+          message: "Error en los parámetros de entrada",
+        },
+      });
+    }
+    const pool = await sql.connect();
+    const result = await pool
+      .request()
+      .input("p_uidIdSystemUser", sql.NVarChar, idSystemUser)
+      .input("p_uidIdLoginHistory", sql.NVarChar, idLoginHistory)
+      .input("p_uidIdPawn", sql.NVarChar, idPawn)
+      .input("p_nvcMetadata", sql.NVarChar(sql.MAX), metadata)
+      .input("p_chrOffset", sql.Char(6), offset)
+      .execute(storeProcedure);
+    ValidateResultDataBase(
+      result,
+      async ({ status, message, error }, object, recordset) => {
+        if (error) {
+          LoggerSystem(
+            storeProcedure,
+            params,
+            object,
+            error,
+            locationCode
+          ).warn();
+          return res.status(status).send({ response: { message, error } });
+        }
+        if (isEmpty(object) === false && object.canSendWhats === true) {
+          await executeGetMessageScheduled(
+            { key: GLOBAL_CONSTANTS.KEY_MESSAGE_SCHEDULED },
+            () => {}
+          );
+        }
+        if (isEmpty(recordset) === false) {
+          for (const element of recordset) {
+            if (element.canSendEmail === true) {
+              await executeMailTo(element);
+            }
+          }
+        }
+        return res.status(status).send({
+          response: {
+            message,
+          },
+        });
+      }
+    );
+  } catch (error) {
+    LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
+    res.status(500).send({
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
+    });
+  }
+};
+
 const ControllerSystemAdmin = {
   setUserInObject: (req, res) => {
     const params = req.body;
@@ -607,6 +692,11 @@ const ControllerSystemAdmin = {
   getPawnById: (req, res) => {
     const params = req.body;
     executeGetPawnById(params, res);
+  },
+  setPawnProcess: (req, res) => {
+    const params = req.body;
+    const url = req.params;
+    executeSetPawnProcess(params, res, url);
   },
 };
 

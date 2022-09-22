@@ -12,5 +12,6 @@ router.post("/getPawnDocumentsForAdmin", ControllerSystemAdmin.getPawnDocumentsF
 router.put("/reviewDocument/:idDocument", ControllerSystemAdmin.reviewDocument);
 router.put("/setPipelineAdminStep/:idPawn", ControllerSystemAdmin.setPipelineAdminStep);
 router.post("/getPawnById", ControllerSystemAdmin.getPawnById);
+router.put("/setPawnProcess/:idPawn", ControllerSystemAdmin.setPawnProcess);
 
 module.exports = router;

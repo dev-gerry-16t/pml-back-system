@@ -481,7 +481,24 @@ const executeSetPipelineAdminStep = async (params, res, url) => {
         if (isEmpty(recordset) === false) {
           for (const element of recordset) {
             if (element.canSendEmail === true) {
-              await executeMailTo(element);
+              let arrayPushVar = [];
+              if (element.hasToken === true) {
+                const tokenApp = await createBearerToken({
+                  idSystemUser: element.idSystemUser,
+                  idLoginHistory: element.idLoginHistory,
+                  tokenExpiration: element.expireIn,
+                });
+                arrayPushVar = [
+                  {
+                    name: "nvcToken",
+                    content: tokenApp,
+                  },
+                ];
+              }
+              await executeMailTo({
+                ...element,
+                pushVar: arrayPushVar,
+              });
             }
           }
         }
@@ -594,7 +611,7 @@ const executeSetPawnProcess = async (params, res, url) => {
     if (
       isNil(idSystemUser) === true ||
       isNil(idLoginHistory) === true ||
-      isNil(idPawn) === true 
+      isNil(idPawn) === true
     ) {
       LoggerSystem(
         storeProcedure,
@@ -640,7 +657,24 @@ const executeSetPawnProcess = async (params, res, url) => {
         if (isEmpty(recordset) === false) {
           for (const element of recordset) {
             if (element.canSendEmail === true) {
-              await executeMailTo(element);
+              let arrayPushVar = [];
+              if (element.hasToken === true) {
+                const tokenApp = await createBearerToken({
+                  idSystemUser: element.idSystemUser,
+                  idLoginHistory: element.idLoginHistory,
+                  tokenExpiration: element.expireIn,
+                });
+                arrayPushVar = [
+                  {
+                    name: "nvcToken",
+                    content: tokenApp,
+                  },
+                ];
+              }
+              await executeMailTo({
+                ...element,
+                pushVar: arrayPushVar,
+              });
             }
           }
         }

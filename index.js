@@ -63,7 +63,6 @@ app.use("/api/v1/signin", routesSignIn);
 app.use("/api/v1/login", routesLogIn);
 app.use("/api/v1/systemConfiguration", routesSystemConfig);
 app.use("/api/v1/systemUser", routesSystemUser);
-app.use("/api/v1/systemUser", routesSystemUser);
 app.use("/api/v1/verification", routesMetaMap);
 app.use("/api/v1/catalogs", routesCatalogs);
 app.use("/api/v1/file", routesViewFiles);

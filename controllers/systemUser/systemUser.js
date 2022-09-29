@@ -4,6 +4,7 @@ const isEmpty = require("lodash/isEmpty");
 const AWS = require("aws-sdk");
 const GLOBAL_CONSTANTS = require("../../constants/constants");
 const LoggerSystem = require("../../actions/loggerSystem");
+const createBearerToken = require("../../actions/createBearerToken");
 
 const s3 = new AWS.S3({
   accessKeyId: GLOBAL_CONSTANTS.AWS_S3_ACCESS_KEY_ID,
@@ -288,6 +289,30 @@ const executeSetPipelineStep = async (params, res, url) => {
         },
       });
     } else if (isEmpty(resultRecordsetObject) === false) {
+      if (isEmpty(resultRecordset) === false) {
+        for (const element of resultRecordset) {
+          if (element.canSendEmail === true) {
+            let arrayPushVar = [];
+            if (element.hasToken === true) {
+              const tokenApp = await createBearerToken({
+                idSystemUser: element.idSystemUser,
+                idLoginHistory: element.idLoginHistory,
+                tokenExpiration: element.expireIn,
+              });
+              arrayPushVar = [
+                {
+                  name: "nvcToken",
+                  content: tokenApp,
+                },
+              ];
+            }
+            await executeMailTo({
+              ...element,
+              pushVar: arrayPushVar,
+            });
+          }
+        }
+      }
       return res.status(resultRecordsetObject.stateCode).send({
         response: {
           message: resultRecordsetObject.message,

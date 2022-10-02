@@ -11,5 +11,7 @@ router.put("/setPipelineStep/:idPawn", ControllerSystemUser.setPipelineStep);
 router.put("/setVehicle/:idItem", ControllerSystemUser.setVehicle);
 router.post("/getPawnDocuments", ControllerSystemUser.getPawnDocuments);
 router.put("/setCustomerInDocument", ControllerSystemUser.setCustomerInDocument);
+router.post("/setCustomerInDeleteDocument", ControllerSystemUser.setCustomerInDeleteDocument);
+
 
 module.exports = router;

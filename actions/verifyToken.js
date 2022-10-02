@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const GLOBAL_CONSTANTS = require("../constants/constants");
 
+const message = "Token incorrecto o ha expirado";
+
 const verifyToken = (token) => {
   try {
     if (!token) throw "Acceso denegado";
@@ -8,7 +10,7 @@ const verifyToken = (token) => {
     const verified = jwt.verify(token, GLOBAL_CONSTANTS.MASTER_KEY_TOKEN);
     return verified;
   } catch (error) {
-    throw error;
+    throw message;
   }
 };
 

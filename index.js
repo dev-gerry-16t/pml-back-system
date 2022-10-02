@@ -16,6 +16,8 @@ const routesSystemUser = require("./routes/routesSystemUser");
 const routesMetaMap = require("./routes/routesMetamap");
 const routesCatalogs = require("./routes/routesCatalogs");
 const routesViewFiles = require("./routes/routesViewFiles");
+const routesWhatsApp = require("./routes/routesWhatsApp");
+const routesAdmin = require("./routes/routesAdmin");
 
 const verifyToken = require("./middleware/authenticate");
 
@@ -54,18 +56,18 @@ app.use(upload);
 const port = process.env.PORT || GLOBAL_CONSTANTS.PORT;
 
 app.get("/", (req, res) => {
-  LoggerSystem("not available route '/'").warn();
-  res.status(404).send("<h1>Not found</h1>");
+  res.status(200).send("<h1>Not found</h1>");
 });
 
 app.use("/api/v1/signin", routesSignIn);
 app.use("/api/v1/login", routesLogIn);
 app.use("/api/v1/systemConfiguration", routesSystemConfig);
 app.use("/api/v1/systemUser", routesSystemUser);
-app.use("/api/v1/systemUser", routesSystemUser);
 app.use("/api/v1/verification", routesMetaMap);
 app.use("/api/v1/catalogs", routesCatalogs);
 app.use("/api/v1/file", routesViewFiles);
+app.use("/api/v1/message", routesWhatsApp);
+app.use("/api/v1/admin", routesAdmin);
 
 app.listen(port, (e, i) => {
   LoggerSystem("Server running").info();

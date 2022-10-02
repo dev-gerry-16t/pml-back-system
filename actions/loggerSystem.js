@@ -11,7 +11,9 @@ const LoggerSystem = (
   error = {},
   location = {}
 ) => {
-  const dateTime = moment().utcOffset("-05:00").format("YYYY/MMM/DD hh:mm:ss a");
+  const dateTime = moment()
+    .utcOffset("-05:00")
+    .format("YYYY/MMM/DD hh:mm:ss a");
   const errorMessage =
     isNil(error) === false &&
     isObject(error) === true &&
@@ -31,13 +33,22 @@ const LoggerSystem = (
   });
   return {
     error: () => {
-      logger.error(objectLogString);
+      logger.log({
+        level: "error",
+        message: objectLogString,
+      });
     },
     warn: () => {
-      logger.warn(objectLogString);
+      logger.log({
+        level: "warn",
+        message: objectLogString,
+      });
     },
     info: () => {
-      logger.info(sp);
+      logger.log({
+        level: "info",
+        message: objectLogString,
+      });
     },
   };
 };

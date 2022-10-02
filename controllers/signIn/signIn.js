@@ -278,8 +278,10 @@ const executeSignInUser = async (params, res, fromIp) => {
   } catch (error) {
     LoggerSystem(storeProcedure, params, {}, error, locationCode).error();
     res.status(500).send({
-      message:
-        "Error en el servicio, si persiste el error contacta con soporte",
+      response: {
+        message:
+          "Error en el servicio, si persiste el error contacta con soporte",
+      },
     });
   }
 };
@@ -328,6 +330,13 @@ const executeVerifyEnroll = async (params, res) => {
         },
       });
     } else if (isEmpty(resultObject) === false) {
+      LoggerSystem(
+        storeProcedure,
+        params,
+        resultObject,
+        {},
+        locationCode
+      ).info();
       const tokenApp = await createBearerToken({
         idSystemUser: resultObject.idSystemUser,
         idLoginHistory: resultObject.idLoginHistory,

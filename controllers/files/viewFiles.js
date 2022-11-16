@@ -62,11 +62,72 @@ const executeGetFile = async (params, res, queryParams) => {
   }
 };
 
+const executeDownloadFile = async (params, res, queryParams) => {
+  const { idDocument = null, bucketSource = null } = params;
+  const { type = "", name = "Document" } = queryParams;
+  const locationCode = {
+    function: "executeDownloadFile",
+    file: "viewFiles.js",
+  };
+
+  try {
+    if (isNil(idDocument) === true || isNil(bucketSource) === true) {
+      LoggerSystem(
+        "none",
+        params,
+        {},
+        {
+          message: "Parámetros incompletos",
+        },
+        locationCode
+      ).warn();
+      res.status(400).send({
+        response: {
+          message: "Parámetros incompletos",
+        },
+      });
+    } else {
+      const file = await s3
+        .getObject({
+          Bucket: bucketSource,
+          Key: idDocument,
+        })
+        .promise();
+
+      const buff = new Buffer.from(file.Body, "binary");
+
+      let headConfig = {};
+
+      if (isNil(buff) === false) {
+        headConfig["Content-Length"] = buff.length;
+      }
+      if (isNil(name) === false && isEmpty(type) === false) {
+        headConfig["Content-Disposition"] = `attachment;filename=${name}`;
+      }
+      if (isEmpty(type) === false) {
+        headConfig["Content-Type"] = type;
+      }
+      res.writeHead(200, headConfig);
+      res.end(buff);
+    }
+  } catch (error) {
+    LoggerSystem("none", params, {}, error, locationCode).error();
+    res.status(500).send({
+      message: "fail",
+    });
+  }
+};
+
 const ControllerViewFiles = {
   getFile: (req, res) => {
     const params = req.params;
     const queryParams = req.query;
     executeGetFile(params, res, queryParams);
+  },
+  downloadFile: (req, res) => {
+    const params = req.params;
+    const queryParams = req.query;
+    executeDownloadFile(params, res, queryParams);
   },
 };
 

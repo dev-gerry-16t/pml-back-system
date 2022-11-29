@@ -10,11 +10,12 @@ const executeGetContactInformationById = async (params, res) => {
   };
   try {
     const response = await rp({
-      url: `https://api.hubapi.com/crm/v3/objects/contacts/${userId}/?archived=false&properties=firstname,mobilephone,lastname,email,phone&hapikey=${GLOBAL_CONSTANTS.API_KEY_HUBSPOT}`,
+      url: `https://api.hubapi.com/crm/v3/objects/contacts/${userId}/?archived=false&properties=firstname,mobilephone,lastname,email,phone`,
       method: "GET",
       headers: {
         encoding: "UTF-8",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${GLOBAL_CONSTANTS.API_KEY_HUBSPOT}`,
       },
       json: true,
       rejectUnauthorized: false,

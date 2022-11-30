@@ -110,11 +110,12 @@ const executeCallContactHubSpotApi = async (params) => {
   const { userId, tokenApi, paramsProperties, paramAssociation } = params;
   try {
     const responseHSContact = await rp({
-      url: `https://api.hubapi.com/crm/v3/objects/contacts/${userId}/?associations=${paramAssociation}&&archived=false&properties=${paramsProperties}&hapikey=${tokenApi}`,
+      url: `https://api.hubapi.com/crm/v3/objects/contacts/${userId}/?associations=${paramAssociation}&&archived=false&properties=${paramsProperties}`,
       method: "GET",
       headers: {
         encoding: "UTF-8",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenApi}`,
       },
       json: true,
       rejectUnauthorized: false,
@@ -154,11 +155,12 @@ const executeCallDealHubSpotApi = async (params) => {
   const { dealId, dealParams, tokenApi } = params;
   try {
     const response = await rp({
-      url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${dealParams}&hapikey=${tokenApi}`,
+      url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${dealParams}`,
       method: "GET",
       headers: {
         encoding: "UTF-8",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenApi}`,
       },
       json: true,
       rejectUnauthorized: false,

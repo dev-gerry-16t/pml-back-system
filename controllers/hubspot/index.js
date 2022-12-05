@@ -20,6 +20,7 @@ const executeGetContactInformationById = async (params, res) => {
       json: true,
       rejectUnauthorized: false,
     });
+    
     return res.status(200).send({
       response: response.properties,
     });
